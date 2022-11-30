@@ -3,6 +3,7 @@
 
 # compiled
 dist
+public
 
 # dependencies
 node_modules
