@@ -1,0 +1,16 @@
+.idea
+.vscode
+
+# compiled
+dist
+
+# dependencies
+node_modules
+
+# testing
+coverage
+
+# misc
+.env*
+
+.DS_Store
