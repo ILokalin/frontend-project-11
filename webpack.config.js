@@ -4,7 +4,6 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-
 const config = {
   entry: './src/index.js',
   output: {
@@ -45,5 +44,5 @@ const config = {
 
 export default {
   ...config,
-  mode: isProduction ? 'production' : 'development'
+  mode: isProduction ? 'production' : 'development',
 };
