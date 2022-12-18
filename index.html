@@ -9,12 +9,44 @@
 </head>
 
 <body>
-  <h1>RSS агрегатор</h1>
-  <form>
-    <label for="rss">RSS-поток</label>
-    <input id="rss" name="rss" type="text" value="">
-    <button>submit</button>
-  </form>
+  <main>
+    <section class="container-fluid bg-dark p-5">
+      <div class="row">
+        <div class="col-md-10 col-lg-8 mx-auto text-white">
+          <h1 class="display-3 mb-0">RSS агрегатор</h1>
+          <p class="lead">Начните читать RSS сегодня! Это легко, это красиво.</p>
+          <form class="rss-form text-body">
+            <div class="row">
+              <div class="col">
+                <div class="form-floating">
+                  <input class="form-control w-100" id="rss-input" name="rss" placeholder="ссылка RSS" required type="text" autofocus autocomplete="off">
+                  <label for="rss-input">Ссылка RSS</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="h-100 btn btn-lg btn-primary px-sm-5">Добавить</button>
+              </div>
+            </div>
+          </form>
+          <p class="mt-2 mb-0 text-muted">Пример: https://ru.hexlet.io/lessons.rss</p>
+          <p class="feedback m-0 position-absolute small text-danger"></p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="container">
+  
+      </div>
+    </section>
+  </main>
+  <footer class="footer border-top py-3 mt-5 bg-light">
+    <div class="container-xl">
+      <div class="text-center">
+        created by 
+        <a href="https://github.com/ILokalin/frontend-project-11" target="_blank">Lokalin</a>
+      </div>
+    </div>
+  </footer>
 </body>
 
 </html>

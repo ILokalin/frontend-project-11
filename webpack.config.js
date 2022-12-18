@@ -2,7 +2,7 @@ import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const mode = process.env.NODE_ENV || 'development';
 
 const config = {
   entry: './src/index.js',
@@ -10,7 +10,6 @@ const config = {
     path: path.resolve('public'),
   },
   devServer: {
-    open: true,
     host: 'localhost',
     port: 5000,
   },
@@ -44,5 +43,5 @@ const config = {
 
 export default {
   ...config,
-  mode: isProduction ? 'production' : 'development',
+  mode,
 };
