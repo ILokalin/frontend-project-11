@@ -1,21 +1,23 @@
 import onChange from 'on-change';
 
-export default (containers, state, i18next) => {
-  const handleForm = (state) => {
-    const { input, feedback } = containers;
-    const { valid, error } = state.form;
+export default (elements, initialState, i18next) => {
+  const handleForm = ({ form }) => {
+    const { input, feedback } = elements;
+    const { valid, error } = form;
 
     if (valid) {
       input.classList.remove('is-invalid');
+      feedback.classList.add('text-success');
       feedback.textContent = '';
     } else {
       input.classList.add('is-invalid');
+      feedback.classList.add('text-danger');
       feedback.textContent = i18next.t([`errors.${error}`, 'errors.unknown']);
     }
   };
 
   const handleFeeds = ({ feeds }) => {
-    const { feedsContainer } = containers;
+    const { feedsContainer } = elements;
 
     const feedsFragment = document.createElement('div');
     feedsFragment.classList.add('card', 'border-0');
@@ -30,15 +32,12 @@ export default (containers, state, i18next) => {
     feedsList.classList.add('list-group', 'border-0', 'rounded-0');
 
     const feedsItems = feeds.map((feed) => {
-      const element = document.createElement('li');
-      element.classList.add('list-group-item', 'border-0', 'border-end-0');
-      const title = document.createElement('h3');
-      title.classList.add('h6', 'm-0');
+      const element = elements.feedTemplate.content.cloneNode(true);
+      const title = element.querySelector('h3');
       title.textContent = feed.title;
-      const description = document.createElement('p');
-      description.classList.add('m-0', 'small', 'text-black-50');
+      const description = element.querySelector('p');
       description.textContent = feed.description;
-      element.append(title, description);
+
       return element;
     });
 
@@ -49,7 +48,7 @@ export default (containers, state, i18next) => {
   };
 
   const handlePosts = ({ posts }) => {
-    const { postsContainer } = containers;
+    const { postsContainer } = elements;
 
     const postsFragment = document.createElement('div');
     postsFragment.classList.add('card', 'border-0');
@@ -64,18 +63,12 @@ export default (containers, state, i18next) => {
     postsList.classList.add('list-group', 'border-0', 'rounded-0');
 
     const postsListItems = posts.map((post) => {
-      const element = document.createElement('li');
-      element.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-      
-      const link = document.createElement('a');
+      const element = elements.postTemplate.content.cloneNode(true);
+      const link = element.querySelector('a');
       link.setAttribute('href', post.link);
-
       link.dataset.id = post.id;
       link.textContent = post.title;
-      link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener noreferrer');
-      element.appendChild(link);
-    
+
       return element;
     });
 
@@ -85,15 +78,50 @@ export default (containers, state, i18next) => {
     postsContainer.appendChild(postsFragment);
   };
 
-  const watchedState = onChange(state, (path) => {
+  const handleLoadingProcess = ({ loadingProcess }) => {
+    const { submit, input, feedback } = elements;
+    feedback.classList.remove('text-success');
+    feedback.classList.remove('text-danger');
+
+    switch (loadingProcess.status) {
+      case 'fail':
+        submit.disabled = false;
+        input.removeAttribute('readonly');
+        feedback.classList.add('text-danger');
+        feedback.textContent = i18next.t([`errors.${loadingProcess.error}`, 'errors.unknown']);
+        break;
+      case 'success':
+        submit.disabled = false;
+        input.removeAttribute('readonly');
+        input.value = '';
+        feedback.classList.add('text-success');
+        feedback.textContent = i18next.t('loading.success');
+        input.focus();
+        break;
+      case 'loading':
+        submit.disabled = true;
+        input.setAttribute('readonly', true);
+        feedback.innerHTML = i18next.t('loading.loading');
+        break;
+      default:
+        throw new Error(`Unknown loadingProcess status: '${loadingProcess.status}'`);
+    }
+  };
+
+  const watchedState = onChange(initialState, (path) => {
     switch (path) {
       case 'form':
-        handleForm(state);
+        handleForm(initialState);
         break;
       case 'feeds':
-        handleFeeds(state);
+        handleFeeds(initialState);
+        break;
       case 'posts':
-        handlePosts(state);  
+        handlePosts(initialState);
+        break;
+      case 'loadingProcess':
+        handleLoadingProcess(initialState);
+        break;
       default:
         break;
     }

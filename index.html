@@ -36,7 +36,9 @@
     <section class="container-fluid container-xxl p-5">
       <div class="row">
         <div class="col-md-10 col-lg-8 order-1 mx-auto posts"></div>
-        <div class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 feeds"></div>
+        <div class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 feeds">
+
+        </div>
       </div>
     </section>
   </main>
@@ -50,4 +52,17 @@
   </footer>
 </body>
 
+<template id="postItem">
+  <li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0">
+    <a href="" data-id="" target="_blank" rel="noopener noreferrer"></a>
+  </li>
+</template>
+
+<template id="feedItem">
+  <li class="list-group-item border-0 border-end-0">
+    <h3 class="h6 m-0"></h3>
+    <p class="m-0 small text-black-50"></p>
+  </li>
+</template>
 </html>
+

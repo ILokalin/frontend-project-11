@@ -14,12 +14,12 @@ export default (data) => {
   const channelDescription = dom.querySelector('channel > description').textContent;
 
   const itemsNodes = dom.querySelectorAll('item');
-  const items = [...itemsNodes].map(item => {
+  const items = [...itemsNodes].map((item) => {
     const title = item.querySelector('title').textContent;
     const link = item.querySelector('link').textContent;
     const description = item.querySelector('description').textContent;
 
-    return { title, link, description }
+    return { title, link, description };
   });
 
   return { title: channelTitle, description: channelDescription, items };
