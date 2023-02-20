@@ -9,6 +9,21 @@
 </head>
 
 <body>
+  <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document" bis_skin_checked="1">
+      <div class="modal-content" bis_skin_checked="1">
+        <div class="modal-header" bis_skin_checked="1">
+          <h5 class="modal-title"></h5>
+          <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-break" bis_skin_checked="1"></div>
+        <div class="modal-footer" bis_skin_checked="1">
+          <a class="btn btn-primary full-article" href="" data-action="readFull" role="button" target="_blank" rel="noopener noreferrer"></a>
+          <button type="button" class="btn btn-secondary" data-action="close" data-bs-dismiss="modal"></button>
+        </div>
+      </div>
+    </div>
+  </div>
   <main>
     <section class="container-fluid bg-dark p-5">
       <div class="row">
@@ -55,6 +70,7 @@
 <template id="postItem">
   <li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0">
     <a href="" data-id="" target="_blank" rel="noopener noreferrer"></a>
+    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal"></button>
   </li>
 </template>
 

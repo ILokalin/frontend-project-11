@@ -1,6 +1,7 @@
+import { find } from 'lodash';
 import onChange from 'on-change';
 
-export default (elements, initialState, i18next) => {
+export default (elements, state, i18next) => {
   const handleForm = ({ form }) => {
     const { input, feedback } = elements;
     const { valid, error } = form;
@@ -47,7 +48,7 @@ export default (elements, initialState, i18next) => {
     feedsContainer.appendChild(feedsFragment);
   };
 
-  const handlePosts = ({ posts }) => {
+  const handlePosts = ({ posts, seenPosts }) => {
     const { postsContainer } = elements;
 
     const postsFragment = document.createElement('div');
@@ -65,10 +66,17 @@ export default (elements, initialState, i18next) => {
     const postsListItems = posts.map((post) => {
       const element = elements.postTemplate.content.cloneNode(true);
       const link = element.querySelector('a');
+      const className = seenPosts.has(post.id) ? ['fw-normal', 'link-secondary'] : ['fw-bold'];
+      link.classList.add(...className);
       link.setAttribute('href', post.link);
       link.dataset.id = post.id;
       link.textContent = post.title;
 
+      const button = element.querySelector('button');
+      button.dataset.id = post.id;
+      button.dataset.bsToggle = 'modal';
+      button.dataset.bsTarget = '#modal';
+      button.textContent = i18next.t('preview');
       return element;
     });
 
@@ -108,19 +116,42 @@ export default (elements, initialState, i18next) => {
     }
   };
 
-  const watchedState = onChange(initialState, (path) => {
+  const handleModal = ({ posts, modal }) => {
+    const post = find(posts, { id: modal.postId });
+    const { modalTemplate } = elements; 
+    const title = modalTemplate.querySelector('.modal-title');
+    title.textContent = post.title;
+
+    const body = modalTemplate.querySelector('.modal-body');
+    body.textContent = post.description;
+
+    const readFullButton = modalTemplate.querySelector('[data-action="readFull"]');
+    readeFullButton.textContent = i18next.t('readFull');
+    readeFullButton.href = post.link;
+
+    const closeButton = modalTemplate.querySelector('[data-action="close"]');
+    closeButton.textContent = i18next.t('close');
+  };
+
+  const watchedState = onChange(state, (path) => {
     switch (path) {
       case 'form':
-        handleForm(initialState);
+        handleForm(state);
         break;
       case 'feeds':
-        handleFeeds(initialState);
+        handleFeeds(state);
         break;
       case 'posts':
-        handlePosts(initialState);
+        handlePosts(state);
         break;
       case 'loadingProcess':
-        handleLoadingProcess(initialState);
+        handleLoadingProcess(state);
+        break;
+      case 'modal.postId':
+        handleModal(state);
+        break;
+      case 'ui.seenPosts':
+        handlePosts(state);
         break;
       default:
         break;

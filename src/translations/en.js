@@ -14,5 +14,8 @@ export default {
     },
     feeds: 'Feeds',
     posts: 'Posts',
+    preview: 'Preview',
+    close: 'Close',
+    readFull: 'Read completely',
   },
 };

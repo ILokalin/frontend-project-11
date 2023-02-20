@@ -111,7 +111,7 @@ const validateUrl = (url, feeds) => {
 const app = () => {
   const initialState = {
     form: {
-      error: null,
+      error: '',
       valid: false,
     },
     loadingProcess: {
@@ -120,6 +120,10 @@ const app = () => {
     },
     feeds: [],
     posts: [],
+    seenPosts: new Set(),
+    modal: {
+      postId: '',
+    },
   };
 
   const elements = {
@@ -131,6 +135,7 @@ const app = () => {
     postTemplate: document.querySelector('#postItem'),
     feedTemplate: document.querySelector('#feedItem'),
     submit: document.querySelector('.rss-form button[type="submit"]'),
+    modalTemplate: document.querySelector('#modal'),
   };
 
   const i18nextInstance = i18next.createInstance();
@@ -160,6 +165,18 @@ const app = () => {
             }
           });
       });
+
+      elements?.postsContainer?.addEventListener('click', (event) => {
+        // @ts-ignore
+        if (!('id' in event.target.dataset)) {
+          return;
+        }
+        // @ts-ignore
+        const { id } = event.target.dataset;
+        watchedState.modal.postId = String(id);
+        watchedState.seenPosts.add(id);
+      });
+  
       setTimeout(() => fetchNewPosts(watchedState), FETCHING_TIMEOUT);
     });
 };

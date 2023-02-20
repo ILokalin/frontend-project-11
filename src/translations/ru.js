@@ -14,5 +14,8 @@ export default {
     },
     feeds: 'Фиды',
     posts: 'Посты',
+    preview: 'Предпросмотр',
+    close: 'Закрыть',
+    readFull: 'Читать полностью',
   },
 };
