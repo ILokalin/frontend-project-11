@@ -117,18 +117,17 @@ export default (elements, state, i18next) => {
   };
 
   const handleModal = ({ posts, modal }) => {
-    const post = find(posts, { id: modal.postId });
     const { modalTemplate } = elements;
+    const post = find(posts, { id: modal.postId });
+
     const title = modalTemplate.querySelector('.modal-title');
     title.textContent = post.title;
-
     const body = modalTemplate.querySelector('.modal-body');
     body.textContent = post.description;
 
     const readFullButton = modalTemplate.querySelector('[data-action="readFull"]');
     readFullButton.textContent = i18next.t('readFull');
     readFullButton.href = post.link;
-
     const closeButton = modalTemplate.querySelector('[data-action="close"]');
     closeButton.textContent = i18next.t('close');
   };
