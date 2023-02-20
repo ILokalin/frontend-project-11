@@ -4,7 +4,7 @@ lint:
 	npx eslint .
 lintFix:
 	npx eslint --fix .
-buld
+buld:
 	npm run build
-start
+start:
 	npm start
