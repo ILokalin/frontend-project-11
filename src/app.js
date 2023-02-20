@@ -24,17 +24,17 @@ const updateState = (state, field, data) => {
   };
 };
 
-const getLoadingProcessErrorType = (e) => {
-  if (e.isParsingError) {
-    return 'noRss';
-  }
-  if (e.isAxiosError) {
-    if (e.message.includes('timeout')) {
+const getLoadingProcessErrorType = (error) => {
+  switch (true) {
+    case error.isParsingError:
+      return 'noRss';
+    case error.isAxiosError && error.message.includes('timeout'):
       return 'timeout';
-    }
-    return 'network';
+    case error.isAxiosError:
+      return 'network';
+    default:
+      return 'unknow';
   }
-  return 'unknown';
 };
 
 const readRss = (watchedState, url) => {
