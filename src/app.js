@@ -176,7 +176,7 @@ const app = () => {
         watchedState.modal.postId = String(id);
         watchedState.seenPosts.add(id);
       });
-  
+
       setTimeout(() => fetchNewPosts(watchedState), FETCHING_TIMEOUT);
     });
 };
