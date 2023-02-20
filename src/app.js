@@ -39,7 +39,6 @@ const getLoadingProcessErrorType = (error) => {
 
 const readRss = (watchedState, url) => {
   updateState(watchedState, 'loadingProcess', {
-    inProgress: true,
     status: 'loading',
     error: null,
   });
@@ -58,7 +57,6 @@ const readRss = (watchedState, url) => {
       }));
 
       updateState(watchedState, 'loadingProcess', {
-        inProgress: false,
         status: 'success',
         error: null,
       });
@@ -67,7 +65,6 @@ const readRss = (watchedState, url) => {
     })
     .catch((error) => {
       updateState(watchedState, 'loadingProcess', {
-        inProgress: false,
         status: 'fail',
         error: getLoadingProcessErrorType(error),
       });
@@ -111,12 +108,12 @@ const validateUrl = (url, feeds) => {
 const app = () => {
   const initialState = {
     form: {
-      error: '',
+      error: null,
       valid: false,
     },
     loadingProcess: {
-      inProgress: false,
       status: 'success',
+      error: null,
     },
     feeds: [],
     posts: [],
@@ -158,7 +155,7 @@ const app = () => {
         validateUrl(url, watchedState.feeds)
           .then((error) => {
             if (!error) {
-              updateState(watchedState, 'form', { valid: true, error: '' });
+              updateState(watchedState, 'form', { valid: true, error: null });
               readRss(watchedState, url);
             } else {
               updateState(watchedState, 'form', { valid: false, error: error.key });
