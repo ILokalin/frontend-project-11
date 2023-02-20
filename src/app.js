@@ -1,12 +1,13 @@
 // @ts-check
 import i18next from 'i18next';
 import axios from 'axios';
-import { uniqueId } from 'lodash';
+import { differenceBy, uniqueId } from 'lodash';
 import { string, setLocale } from 'yup';
 import watch from './watcher.js';
 import locale from './translations/yupLocale.js';
 import translations from './translations/index.js';
 import parse from './parser.js';
+import { FETCHING_TIMEOUT, REQUEST_TIMEOUT } from './constants.js';
 
 const addProxy = (originUrl) => {
   const proxyUrl = new URL('/get', 'https://allorigins.hexlet.app');
@@ -44,7 +45,7 @@ const readRss = (watchedState, url) => {
   });
 
   return axios
-    .get(addProxy(url), { timeout: 10000 })
+    .get(addProxy(url), { timeout: REQUEST_TIMEOUT })
     .then((response) => {
       const { title, description, items } = parse(response.data.contents);
       const feed = {
@@ -52,7 +53,7 @@ const readRss = (watchedState, url) => {
       };
       const posts = items.map((item) => ({
         ...item,
-        chnnelId: feed.Id,
+        channelId: feed.id,
         id: uniqueId(),
       }));
 
@@ -71,6 +72,40 @@ const readRss = (watchedState, url) => {
         error: getLoadingProcessErrorType(error),
       });
     });
+};
+
+const fetchNewPosts = (watchedState) => {
+  const promises = watchedState.feeds.map((feed) => axios
+    .get(addProxy(feed.url), { timeout: REQUEST_TIMEOUT })
+    .then((response) => {
+      const { items: loadedPosts } = parse(response.data.contents);
+      const previousPosts = watchedState.posts.filter((post) => post.channelId === feed.id);
+
+      const newPosts = differenceBy(loadedPosts, previousPosts, 'title')
+        .map((post) => ({ ...post, channelId: feed.id, id: uniqueId() }));
+      watchedState.posts.unshift(...newPosts);
+    })
+    .catch((error) => {
+      updateState(watchedState, 'loadingProcess', {
+        inProgress: false,
+        status: 'fail',
+        error: getLoadingProcessErrorType(error),
+      });
+    }));
+  Promise.all(promises).finally(() => {
+    setTimeout(() => fetchNewPosts(watchedState), FETCHING_TIMEOUT);
+  });
+};
+
+const validateUrl = (url, feeds) => {
+  const feedUrls = feeds.map((feed) => feed.url);
+  const schema = string().url().required();
+
+  return schema
+    .notOneOf(feedUrls)
+    .validate(url)
+    .then(() => null)
+    .catch((error) => error.message);
 };
 
 const app = () => {
@@ -106,43 +141,26 @@ const app = () => {
       resources: translations,
     })
     .then(() => {
+      setLocale(locale);
       const watchedState = watch(elements, initialState, i18nextInstance);
 
-      setLocale(locale);
-      elements?.form?.addEventListener('submit', (e) => {
-        e.preventDefault();
-
+      elements?.form?.addEventListener('submit', (event) => {
+        event.preventDefault();
         // @ts-ignore
-        const data = new FormData(e.target);
+        const data = new FormData(event.target);
         const url = data.get('rss');
-        const urlSchema = string().url().required();
-        const feedsUrls = watchedState.feeds.map((feed) => feed.url);
 
-        urlSchema
-          .notOneOf(feedsUrls)
-          .validate(url)
-          .then(() => {
-            updateState(
-              watchedState,
-              'form',
-              {
-                valid: true,
-                error: '',
-              },
-            );
-            readRss(watchedState, url);
-          })
-          .catch((error) => {
-            updateState(
-              watchedState,
-              'form',
-              {
-                valid: false,
-                error: error.message.key,
-              },
-            );
+        validateUrl(url, watchedState.feeds)
+          .then((error) => {
+            if (!error) {
+              updateState(watchedState, 'form', { valid: true, error: '' });
+              readRss(watchedState, url);
+            } else {
+              updateState(watchedState, 'form', { valid: false, error: error.key });
+            }
           });
       });
+      setTimeout(() => fetchNewPosts(watchedState), FETCHING_TIMEOUT);
     });
 };
 
